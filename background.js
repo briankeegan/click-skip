@@ -1,7 +1,5 @@
 
-const ALLOWED_TO_OPEN = [
-    "https://github.com"
-]
+const ALLOWED_TO_OPEN = [ "https" ]
 
 const POSSIBLE_OBJECTS = ['isAllowedUrl', 'isOn', 'token', 'url', 'tabId']
 
@@ -13,7 +11,6 @@ const startOrStopCount = async () => {
         clearInterval(counter);
         counter = setInterval(() => {
             startCount();
-            checkIfHasChanged(url, token);
         }, 1000);
     } else {
         clearInterval(counter); 
@@ -38,37 +35,6 @@ const reloadTab = async () => {
     const { tabId } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
     console.log('reloading...', tabId);
     chrome.tabs.reload(tabId);
-}
-
-const checkIfHasChanged = function(currentUrl, access_token) {
-    fetch('https://www.googleapis.com/drive/v2/files/' + currentUrl,  {
-        headers: {Authorization: 'Bearer ' + access_token}
-    })
-    .then((response) => {
-        return response.json();
-    })
-    .then(function(data) {
-        if (data.error) {
-            console.log(data.error);
-            chrome.identity.getAuthToken({ interactive: true}, function(token) {
-                access_token = token;
-                chrome.storage.local.set({ token });
-                console.log({token})
-            });
-            // TODO: Surface error to user;
-            return;
-        }
-        const newDate = +new Date(data.modifiedDate);
-        if (currentDate === 0) {
-            currentDate = newDate;
-        }
-        if (newDate > currentDate) {
-            currentDate = newDate;
-  
-        } else {
-            //  console.log('Hasn\'t changed')
-        }
-    })
 }
 
 let count = 0;
