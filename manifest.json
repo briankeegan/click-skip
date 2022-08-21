@@ -37,6 +37,6 @@
     "128": "/images/auto_skip_128.png"
   },
   "externally_connectable": {
-    "matches": []
+    "matches": ["<all_urls>"]
   }
 }
