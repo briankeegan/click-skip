@@ -16,6 +16,10 @@
   },
   "content_scripts": [
     {
+      "js": ["content.js"],
+      "matches": ["<all_urls>"]
+    },
+    {
       "css": ["popup.css"],
       "js": ["popup.js"],
       "run_at": "document_start",

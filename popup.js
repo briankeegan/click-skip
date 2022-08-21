@@ -59,11 +59,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
 });
-
-
-
-
-(async () => {
-    const current = await chrome.tabs
-    console.log(current)
-})();
