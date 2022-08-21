@@ -1,25 +1,46 @@
+// Select the node that will be observed for mutations
+const targetNode = document.getElementById('some-id');
+
+// Options for the observer (which mutations to observe)
+const config = { attributes: true, childList: true, subtree: true };
+
+// Callback function to execute when mutations are observed
+const callback = (mutationList, observer) => {
+  for (const mutation of mutationList) {
+    if (mutation.type === 'childList') {
+      console.log('A child node has been added or removed.');
+    } else if (mutation.type === 'attributes') {
+      console.log(`The ${mutation.attributeName} attribute was modified.`);
+    }
+  }
+};
+
+// Create an observer instance linked to the callback function
+const observer = new MutationObserver(callback);
+
+// Start observing the target node for configured mutations
+observer.observe(targetNode, config);
+
+// Later, you can stop observing
+observer.disconnect();
+
+// ====
 
 // Allow everything
 const ALLOWED_TO_OPEN = ['/'];
 
 const POSSIBLE_OBJECTS = ['isAllowedUrl', 'isOn', 'token', 'url', 'tabId']
 
-const startOrStopCount = async () => {
+const startOrStop = async () => {
     const { isAllowedUrl, isOn, token, url } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
     console.log({ isAllowedUrl, isOn, token, url });
     if (isAllowedUrl && isOn) {
-        // Restart it
-        clearInterval(counter);
-        counter = setInterval(() => {
-            startCount();
-        }, 1000);
+        // Do start here
     } else {
-        clearInterval(counter); 
-        chrome.storage.local.set({
-            isOn: false,
-        })
+        // Stop stuff here
     }
 }
+
 
 
 const validateUrlIsAllowed = async (tabUrl) => {
@@ -33,12 +54,6 @@ chrome.tabs.onActivated.addListener(async response => {
     validateUrlIsAllowed(tab.url);
 });
 
-let count = 0;
-let counter;
-const startCount = async () => {
-    console.log(++count);
-}
-
 
 const getCurrentTab = async () => {
     const tabs = await chrome.tabs.query({
@@ -51,7 +66,7 @@ const getCurrentTab = async () => {
 
 chrome.storage.onChanged.addListener(async function (changes, namespace) {
     if (changes.isOn) {
-        startOrStopCount();
+        startOrStop();
     }   
 });
 
@@ -59,13 +74,7 @@ const onStart = async () => {
     const currentTab = await getCurrentTab();
     await validateUrlIsAllowed(currentTab.url)
 
-    startOrStopCount();
+    startOrStop();
 }
 
 onStart();
-
-
-
-// onload? only run on particular pages? or when you say start.
-// when you start on particular page.
-// add count (number of times it ran) to storage.
