@@ -1,6 +1,6 @@
 
 // Allow everything
-const ALLOWED_TO_OPEN = ['.'];
+const ALLOWED_TO_OPEN = ['/'];
 
 const POSSIBLE_OBJECTS = ['isAllowedUrl', 'isOn', 'token', 'url', 'tabId']
 
@@ -21,22 +21,17 @@ const startOrStopCount = async () => {
     }
 }
 
+
+const validateUrlIsAllowed = async (tabUrl) => {
+    const isAllowedUrl = ALLOWED_TO_OPEN.some(url => tabUrl.includes(url));
+    chrome.storage.local.set({ isAllowedUrl });
+}
+
+
 chrome.tabs.onActivated.addListener(async response => {
     const tab = await chrome.tabs.get(response.tabId);
-    const isAllowedUrl = ALLOWED_TO_OPEN.some(url => tab.url.includes(url));
-    chrome.storage.local.set({ isAllowedUrl });
+    validateUrlIsAllowed(tab.url);
 });
-
-
-
-let currentDate = 0;
-// tabId
-
-const reloadTab = async () => {
-    const { tabId } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
-    console.log('reloading...', tabId);
-    chrome.tabs.reload(tabId);
-}
 
 let count = 0;
 let counter;
@@ -44,13 +39,30 @@ const startCount = async () => {
     console.log(++count);
 }
 
-console.log('background.js loaded');
+
+const getCurrentTab = async () => {
+    const tabs = await chrome.tabs.query({
+        active: true, currentWindow: true
+    });
+    return tabs[0];
+}
+
+
+
 chrome.storage.onChanged.addListener(async function (changes, namespace) {
-    console.log({ changes , namespace })
     if (changes.isOn) {
         startOrStopCount();
     }   
 });
+
+const onStart = async () => {
+    const currentTab = await getCurrentTab();
+    await validateUrlIsAllowed(currentTab.url)
+
+    startOrStopCount();
+}
+
+onStart();
 
 
 
