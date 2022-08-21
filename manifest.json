@@ -1,0 +1,50 @@
+{
+  "name": "Reload on change",
+  "description": "Reload a specific page I'm on when a google file changes",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "identity"
+  ],
+  "content_security_policy": {
+      "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "content_scripts": [
+    {
+      "css": ["popup.css"],
+      "js": ["popup.js"],
+      "matches": ["https://github.com/*"],
+      "run_at": "document_start"
+    }
+  ],
+  "oauth2": {
+      "client_id": "671292960111-ecbtkj11fvidr6ot68ihmlrr2816bh88.apps.googleusercontent.com",
+      "scopes":[
+        "https://www.googleapis.com/auth/drive.readonly"
+      ]
+    },
+  "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "/images/reoloadEmail_16.png",
+        "32": "/images/reoloadEmail_32.png",
+        "48": "/images/reoloadEmail_48.png",
+        "128": "/images/reoloadEmail_128.png"
+      }
+  },
+  "icons": {
+    "16": "/images/reoloadEmail_16.png",
+    "32": "/images/reoloadEmail_32.png",
+    "48": "/images/reoloadEmail_48.png",
+    "128": "/images/reoloadEmail_128.png"
+  },
+  "externally_connectable": {
+    "matches": []
+  }
+}
