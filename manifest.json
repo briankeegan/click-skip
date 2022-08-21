@@ -18,7 +18,8 @@
     {
       "css": ["popup.css"],
       "js": ["popup.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "matches": ["<all_urls>"]
     }
   ],
   "action": {
@@ -35,8 +36,5 @@
     "32": "/images/auto_skip_32.png",
     "48": "/images/auto_skip_48.png",
     "128": "/images/auto_skip_128.png"
-  },
-  "externally_connectable": {
-    "matches": ["<all_urls>"]
   }
 }
