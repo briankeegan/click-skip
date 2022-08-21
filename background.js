@@ -1,5 +1,6 @@
 
-const ALLOWED_TO_OPEN = [ "https" ]
+// Allow everything
+const ALLOWED_TO_OPEN = ['.'];
 
 const POSSIBLE_OBJECTS = ['isAllowedUrl', 'isOn', 'token', 'url', 'tabId']
 
@@ -40,11 +41,6 @@ const reloadTab = async () => {
 let count = 0;
 let counter;
 const startCount = async () => {
-    // Have checks as to when to
-    if (count === 4) { 
-        await reloadTab();
-        count = 0;
-    }
     console.log(++count);
 }
 
