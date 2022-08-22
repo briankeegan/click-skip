@@ -30,10 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const onStart = async () => {
         const { isAllowedUrl, isOn, url } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
-        // if (!Boolean(toggleOnButton)) {
-        //     console.log('Didn\'t run here');
-        //     return;
-        // }
+        if (!Boolean(toggleOnButton)) {
+            console.log('Didn\'t run here');
+            return;
+        }
+        console.log(toggleOnButton);
         // ---------------------------------------------------------------,
         toggleOnButton.addEventListener('click', onClickToggle);
         if (!isAllowedUrl) {

@@ -8,11 +8,33 @@ const config = { attributes: true, childList: true, subtree: true };
 // Callback function to execute when mutations are observed
 const callback = (mutationList, observer) => {
   for (const mutation of mutationList) {
-    if (mutation.type === 'childList') {
-      console.log('A child node has been added or removed.');
-    } else if (mutation.type === 'attributes') {
-      console.log(`The ${mutation.attributeName} attribute was modified.`);
+
+    const skipButton = document.querySelector('.ytp-ad-skip-button');
+    const closeAdButtom = document.querySelector('.ytp-ad-overlay-close-button');
+    if (skipButton) {
+        console.log('skipButton is found');
+        skipButton.click();
     }
+    if (closeAdButtom) {
+        console.log('closeAdButtom is found');
+        closeAdButtom.click();
+    }
+    // const className = mutation?.target?.className
+    // if (
+    //     className?.includes('ytp-ad-skip-button') 
+    //     || className?.includes('ytp-ad-overlay-close-button'
+    // )) {
+    //     console.log('skipped add!');
+    //     mutation.target.click();
+    // }
+    // // 
+    // if (mutation.type === 'childList') {
+    //     console.log(mutation);
+    //   console.log('A child node has been added or removed.');
+    // } else if (mutation.type === 'attributes') {
+    //      console.log(mutation);
+    //   console.log(`The ${mutation.attributeName} attribute was modified.`);
+    // }
   }
 };
 
@@ -26,26 +48,44 @@ const ALLOWED_TO_OPEN = ['/'];
 
 const POSSIBLE_OBJECTS_2 = ['isAllowedUrl', 'isOn', 'token', 'url', 'tabId', 'tabUrl']
 
-let observer = new MutationObserver(callback);
+const observer = new MutationObserver(callback);
 const skipAds = async () => {
-    observer.disconnect();
-    observer = new MutationObserver(callback);
     const { tabUrl } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
-    console.log({tabUrl})
+    console.log(tabUrl.includes('youtube.com'))
+    // youtube case:
     if (tabUrl.includes('youtube.com')) {
+        // const adsContainer = document.querySelector('.ytp-ad-message-container');
         const adsContainer = document.querySelector('.video-ads');
+        const skipButton = document.querySelector('.ytp-ad-skip-button');
+        const closeAdButtom = document.querySelector('.ytp-ad-overlay-close-button');
+        if (skipButton) {
+            console.log('skipButton is found');
+            skipButton.click();
+        }
+        if (closeAdButtom) {
+            console.log('closeAdButtom is found');
+            closeAdButtom.click();
+        }
         if (adsContainer) {
-            observer.observe(targetNode, config);
+            console.log('observer hapenning');
+            observer.observe(adsContainer, config);
+        } else {
+            setTimeout(() => {
+                skipAds();
+            }, 100);
         }
     }
     
 }
-
+// https://www.youtube.com/watch?v=gHnuQZFxHt0
 const startOrStop = async () => {
     const { isAllowedUrl, isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
+    console.log({isAllowedUrl, isOn})
     if (isAllowedUrl && isOn) {
-        // Do start here
-    } else {
+        observer = new MutationObserver(callback);
+        skipAds();
+    } 
+    if (!isOn) {
         observer.disconnect();
     }
 }
@@ -53,7 +93,10 @@ const startOrStop = async () => {
 
 
 const validateUrlIsAllowed = async (tabUrl) => {
-    console.log(tabUrl);
+    if (!isAllowedUrl) {
+        console.log('content: url is not allowed, ', tabUrl);
+        return false;
+    }
     const isAllowedUrl = ALLOWED_TO_OPEN.some(url => tabUrl.includes(url));
     chrome.storage.local.set({ isAllowedUrl, tabUrl });
 }
@@ -63,30 +106,15 @@ const validateUrlIsAllowed = async (tabUrl) => {
 
 chrome.storage.onChanged.addListener(async function (changes, namespace) {
     if (changes.isOn) {
-        startOrStop();
+        await startOrStop();
     }   
 });
 
 const onStart = async () => {
+    console.log('start!')
     await validateUrlIsAllowed(window.location.href)
 
-    startOrStop();
+    await startOrStop();
 }
-onStart()
 
-// chrome.webNavigation.onCompleted.addListener(function(details) {
-//     console.log(details);
-//    onStart()
-// });
-// chrome.webNavigation.onCompleted.addListener(function(details) {
-//     chrome.tabs.executeScript(details.tabId, {
-//         code: ' if (document.body.innerText.indexOf("Cat") !=-1) {' +
-//               '     alert("Cat not found!");' +
-//               ' }'
-//     });
-// }, {
-//     url: [{
-//         // Runs on example.com, example.net, but also example.foo.com
-//         hostContains: '.example.'
-//     }],
-// });
+onStart();
