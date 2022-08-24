@@ -1,14 +1,19 @@
+const listOfSites = [
+    {
+        // https://www.youtube.com/watch?v=gHnuQZFxHt0,
+        urlSearchString: 'youtube.com',
+        containerSelector: '.video-ads',
+        clickableSelectors: ['.ytp-ad-skip-button', '.ytp-ad-overlay-close-button'],
+    },
+];
 
 console.log('content.js is started');
 
 
-// Options for the observer (which mutations to observe)
+
 const config = { childList: true, subtree: false };
 
 let hasStartedObserving = false;
-
-
-
 
 // Allow everything
 const ALLOWED_TO_OPEN = ['/'];
@@ -17,12 +22,6 @@ const POSSIBLE_OBJECTS_2 = ['isAllowedUrl', 'isOn', 'token', 'url', 'tabId', 'ta
 
 
 
-// Make this into reusable
-// take array of possible things to skip
-// array of container(s) to observe.
-
-const youTubeContainerSelector = '.video-ads';
-const youTubeClickableSelectors = ['.ytp-ad-skip-button', '.ytp-ad-overlay-close-button'];
 
 const findAndClick = async (selector) => {
     const element = await document.querySelector(selector);
@@ -49,8 +48,8 @@ const observeContainerAndButtons = async ({
         })
         .observe(adsContainer, config)
     } else {
-        setTimeout(() => {
-            observeContainerAndButtons({
+        setTimeout(async () => {
+            await observeContainerAndButtons({
                 containerSelector,
                 clickableSelectors,
             });
@@ -61,24 +60,25 @@ const observeContainerAndButtons = async ({
 let observer = null;
 const skipAds = async () => {
     const { tabUrl } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
-    // youtube case:
-    if (tabUrl.includes('youtube.com')) {
-        observeContainerAndButtons({
-            containerSelector: youTubeContainerSelector,
-            clickableSelectors: youTubeClickableSelectors,
-        });
-    }
-    
+    listOfSites.forEach(async (currentSite) => {
+        if (tabUrl.includes(currentSite.urlSearchString)) {
+            console.log('Site is ', currentSite.urlSearchString);
+            await observeContainerAndButtons({
+                containerSelector: currentSite.containerSelector,
+                clickableSelectors: currentSite.clickableSelectors,
+            });
+        }
+    });
 }
 
 
-// https://www.youtube.com/watch?v=gHnuQZFxHt0
-const startOrStop = async () => {
-    const { isAllowedUrl, isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
-    if (isAllowedUrl && isOn) {
+const startOrStop = async (isOn = true) => {
+    if (isOn) {
+        console.log('start!')
         skipAds();
     } 
     if (!isOn) {
+        console.log('stop!')
         if (Boolean(observer)) {
             observer.disconnect();
         }
@@ -94,6 +94,7 @@ const validateUrlIsAllowed = async (tabUrl) => {
         return false;
     }
     chrome.storage.local.set({ isAllowedUrl, tabUrl });
+    return isAllowedUrl;
 }
 
 
@@ -101,15 +102,14 @@ const validateUrlIsAllowed = async (tabUrl) => {
 
 chrome.storage.onChanged.addListener(async function (changes, namespace) {
     if (changes.isOn) {
-        await startOrStop();
+        await startOrStop(changes.isOn.newValue);
     }   
 });
 
 const onStart = async () => {
-    console.log('start!')
-    await validateUrlIsAllowed(window.location.href)
-
-    await startOrStop();
+    const isAllowedUrl = await validateUrlIsAllowed(window.location.href)
+    const { isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
+    await startOrStop(isOn && isAllowedUrl);
 }
 
 onStart();

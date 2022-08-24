@@ -1,5 +1,6 @@
 console.log('background.js is running');
 
+// this is pointless
 const ALLOWED_TO_OPEN = ['/'];
 
 const validateUrlIsAllowed = async (tabUrl) => {
