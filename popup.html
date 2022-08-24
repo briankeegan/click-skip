@@ -3,13 +3,13 @@
   <head>
     <link rel="stylesheet" href="popup.css">
   </head>
-  <body>
-     <img src="./images/auto_skip_128.png" class="icon">
-    <div class="hidden" id="disallowed">Extension can't be used on this page.  Try running on another tab?</div>
-    <div id="extensionContent" class="extensionContent">
-      <button id="toggleOn" class="toggleOn" >TURN ON</button>
-      <div id="content" class="content">
-       <div class="label">Skipper is running</div>
+  <body class="popup-extension-body">
+     <img src="./images/auto_skip_128.png" class="popup-extension-icon">
+    <div class="hidden" id="disallowed" class="popup-extension-disallowed">Extension can't be used on this page.  Try running on another tab?</div>
+    <div id="extensionContent" class="popup-extension-content-container">
+      <button id="toggleOn" class="popup-extension-button popup-extension-toggleOn" >TURN ON</button>
+      <div id="content" class="popup-extension-content ">
+       <div class="popup-extension-label">Skipper is running</div>
        <p>
          This will auto skip google ads, and close out others.
           Longer term, will add in css selectors for you to add whaever you want to skip something. (and they will auto click)

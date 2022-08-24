@@ -10,12 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const onClickToggleOn = async (isOn) => {
         if (Boolean(isOn)) {
-            content.classList.remove('hidden');
-            toggleOnButton.classList.add('isOff');
+            content.classList.remove('popup-extension-hidden');
+            toggleOnButton.classList.add('popup-extension-isOff');
             toggleOnButton.innerText = 'TURN OFF';
         } else {
-            content.classList.add('hidden');
-            toggleOnButton.classList.remove('isOff');
+            content.classList.add('popup-extension-hidden');
+            toggleOnButton.classList.remove('popup-extension-isOff');
             toggleOnButton.innerText = 'TURN ON';
         }
     }
@@ -38,11 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // ---------------------------------------------------------------,
         toggleOnButton.addEventListener('click', onClickToggle);
         if (!isAllowedUrl) {
-            extensionContent.classList.add('hidden');
-            disallowedDiv.classList.remove('hidden');
+            extensionContent.classList.add('popup-extension-hidden');
+            disallowedDiv.classList.remove('popup-extension-hidden');
         } else {
-            extensionContent.classList.remove('hidden');
-            disallowedDiv.classList.add('hidden');
+            extensionContent.classList.remove('popup-extension-hidden');
+            disallowedDiv.classList.add('popup-extension-hidden');
 
             onClickToggleOn(isOn);
         }

@@ -1,4 +1,4 @@
-body {
+.popup-extension-body {
   min-width: 150px;
   background-color: lightblue;
   display: flex;
@@ -8,24 +8,24 @@ body {
   text-align: center;
 }
 
-.extensionContent {
+.popup-extension-content-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.content {
+.popup-extension-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 150px;
 }
 
-.icon {
+.popup-extension-icon {
     width: 35px; 
     height: 35px;
 }
-button {
+.popup-extension-button {
   height: 30px;
   outline: none;
   margin: 10px;
@@ -34,17 +34,13 @@ button {
   background-color: whitesmoke;
 }
 
-button.current {
-  box-shadow: 0 0 0 2px white,
-              0 0 0 4px black;
-}
-.label{ 
+.popup-extension-label { 
   margin-top: 5px;
   font-weight: bold;
 }
 
 
-.toggleOn {
+.popup-extension-toggleOn {
   height: 50px;
   margin: 11px;
   width: 100px;
@@ -55,16 +51,16 @@ button.current {
 }
 
 
-.isOff {
+.popup-extension-isOff {
   background-color: red;
   border: 2px solid lightsalmon;
   color: black;
 }
 
-.hidden {
+.popup-extension-hidden {
   display: none;
 }
-.disallowed {
+.popup-extension-disallowed {
   background-color: red;
   border: 2px solid lightsalmon;
   color: black;
