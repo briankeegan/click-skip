@@ -24,9 +24,17 @@ Use at your own risk. (just read the code, its minimal)
 - Double click on the css (in inspector) and copy the class name.
 
 <details> <summary>Click to expand screenshots</summary>
-![how to open inspect 1](screenshots/inspect.png)
-![how to open inspect 2](screenshots/inspect2.png) 
-![how to open inspect 3](screenshots/inspect3.png)
+
+  1. Right click on element (and click inspect)
+  <img src="screenshots/inspect.png" />
+  <hr>
+
+  2. Find the html element in the inspector
+  <img src="screenshots/inspect2.png" />
+  <hr>
+  
+  3. copy the class name
+  <img src="screenshots/inspect3.png" />
 </details>
 
 In this example, it was
