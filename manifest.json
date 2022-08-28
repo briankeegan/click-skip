@@ -3,13 +3,9 @@
   "description": "Close and skip intros, and ads automatically (using css selectors).",
   "version": "1.0",
   "manifest_version": 3,
-  "permissions": [
-    "storage",
-    "tabs",
-    "activeTab"
-  ],
+  "permissions": ["storage", "tabs", "activeTab"],
   "content_security_policy": {
-      "extension_pages": "script-src 'self'; object-src 'self';"
+    "extension_pages": "script-src 'self'; object-src 'self';"
   },
   "content_scripts": [
     {
@@ -25,13 +21,13 @@
     }
   ],
   "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "/images/auto_skip_16.png",
-        "32": "/images/auto_skip_32.png",
-        "48": "/images/auto_skip_48.png",
-        "128": "/images/auto_skip_128.png"
-      }
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/images/auto_skip_16.png",
+      "32": "/images/auto_skip_32.png",
+      "48": "/images/auto_skip_48.png",
+      "128": "/images/auto_skip_128.png"
+    }
   },
   "icons": {
     "16": "/images/auto_skip_16.png",

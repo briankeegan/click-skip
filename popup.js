@@ -1,5 +1,14 @@
 const POSSIBLE_OBJECTS = ['isOn', 'url', 'listToSkip'];
 
+const sortListsWithActiveUrlAtTop = ((listOfSites, tabUrl) => {
+  return listOfSites.reduce((acc, currentSite) => {
+    if (tabUrl.includes(currentSite.urlSearchString)) {
+      return [currentSite, ...acc];
+    }
+    return [...acc, currentSite];
+  }, []);
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   const toggleOnButton = document.getElementById('toggleOn');
 
@@ -8,19 +17,47 @@ document.addEventListener('DOMContentLoaded', async () => {
   const extensionContent = document.getElementById('extensionContent');
   const disallowedDiv = document.getElementById('disallowed');
 
-//   console.log(contentBody)
+  const addContentToBody = (listToSkip, activeUrl) => {
+    const areAnyActive = listToSkip.some(({ urlSearchString }) => {
+      return activeUrl.includes(urlSearchString);
+    }).length > 0;
+    let newContent = '';
+    if (!areAnyActive) {
+      newContent += '<h3 class="popup-extensions-site-not-active">Doesn\'t run on this site.</h3>\n';
+      newContent += '<p>To update, config, see the [README.md]()</p>\n';
+    }
 
-// //   const addContentToBody = async = () => {
-// //     const { listToSkip } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
-// //     contentBody.innerHTML = listToSkip.map((siteInfo) => {
-// //     const { urlSearchString, containerSelector, clickableSelectors } = siteInfo;
-// //     return `<div class="site">
-// //         <div class="site-url">${urlSearchString}</div>
-// //         <div class="site-container">${containerSelector}</div>
-// //         <div class="site-buttons">${clickableSelectors.join(', ')}</div>
-// //         </div>`;
-// //     }).join('\n');
-// //   }
+    newContent += listToSkip
+      .map((siteInfo) => {
+        const { urlSearchString, containerSelector, clickableSelectors } =
+          siteInfo;
+          const isActive = activeUrl.includes(urlSearchString);
+        return `
+    <div class="popup-extensions-site ${isActive ? 'popup-extensions-site-active' : ''}">
+      <div class="popup-extensions-label-thing-container">
+        <div class="popup-extensions-site-url">${urlSearchString}</div>
+      </div>
+      <div class="popup-extensions-label-thing-container">
+        <div class="popup-extension-label">Container:</div>
+        <div class="popup-extensions-site-selector">${containerSelector}</div>
+      </div>
+      <div class="popup-extensions-label-thing-container">
+        <div class="popup-extension-label">Clickables:</div>
+        <div class="popup-extensions-site-selector-wrapper">
+        ${clickableSelectors
+          .map(
+            (selector) =>
+              `<div class="popup-extensions-site-selector">${selector}</div>`
+          )
+          .join('')}
+          </div>
+      </div>
+    </div>`;
+      })
+      .join('\n');
+
+    contentBody.innerHTML = newContent;
+  };
 
   const onClickToggleOn = async (isOn) => {
     if (Boolean(isOn)) {
@@ -42,12 +79,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const onStart = async () => {
-    const { isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
+    const { isOn, listToSkip, url } = await chrome.storage.local.get(
+      POSSIBLE_OBJECTS
+    );
     if (!Boolean(toggleOnButton)) {
       console.log("Didn't run here");
       return;
     }
-    console.log(toggleOnButton);
+    const [firstTab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
+    const listToSkipSorted = await sortListsWithActiveUrlAtTop(listToSkip, firstTab.url);
+    addContentToBody(listToSkipSorted, firstTab.url);
     // ---------------------------------------------------------------,
     toggleOnButton.addEventListener('click', onClickToggle);
     extensionContent.classList.remove('popup-extension-hidden');

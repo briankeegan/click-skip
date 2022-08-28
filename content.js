@@ -69,6 +69,7 @@ const skipAds = async (listToSkip) => {
   const tabUrl = window.location.href;
   listToSkip.forEach(async (currentSite) => {
     if (tabUrl.includes(currentSite.urlSearchString)) {
+      await chrome.storage.local.set({ url: tabUrl });
       console.log('Site is ', currentSite.urlSearchString);
       await observeContainerAndButtons({
         containerSelector: currentSite.containerSelector,
