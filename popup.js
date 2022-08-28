@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     const [firstTab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
     const listToSkipSorted = await sortListsWithActiveUrlAtTop(listToSkip, firstTab.url);
-    addContentToBody(listToSkipSorted, firstTab.url);
+    addContentToBody(listToSkipSorted, (firstTab || {}).url);
     // ---------------------------------------------------------------,
     toggleOnButton.addEventListener('click', onClickToggle);
     extensionContent.classList.remove('popup-extension-hidden');
