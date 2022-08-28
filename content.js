@@ -33,7 +33,6 @@ let hasStartedObserving = false;
 const ALLOWED_TO_OPEN = ['/'];
 
 const POSSIBLE_OBJECTS_2 = [
-  'isAllowedUrl',
   'isOn',
   'token',
   'url',
@@ -110,16 +109,6 @@ const startOrStop = async (isOn = true) => {
   }
 };
 
-const validateUrlIsAllowed = async (tabUrl) => {
-  const isAllowedUrl = ALLOWED_TO_OPEN.some((url) => tabUrl.includes(url));
-  if (!isAllowedUrl) {
-    console.log('content: url is not allowed, ', tabUrl);
-    return false;
-  }
-  chrome.storage.local.set({ isAllowedUrl, tabUrl });
-  return isAllowedUrl;
-};
-
 chrome.storage.onChanged.addListener(async function (changes, namespace) {
   if (changes.isOn) {
     await startOrStop(changes.isOn.newValue);
@@ -128,9 +117,8 @@ chrome.storage.onChanged.addListener(async function (changes, namespace) {
 
 const onStart = async () => {
   console.log('content.js is started');
-  const isAllowedUrl = await validateUrlIsAllowed(window.location.href);
   const { isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
-  await startOrStop(isOn && isAllowedUrl);
+  await startOrStop(isOn);
 };
 
 onStart();
