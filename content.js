@@ -34,24 +34,6 @@ const POSSIBLE_OBJECTS_2 = [
   'tabUrl',
 ];
 
-const getIsElementHidden = (element) => {
-  // return false;
-  const cStyles = window.getComputedStyle(element);
-  const bounds = element.getBoundingClientRect();
-  const isOffScreen =
-    bounds.top < 0 ||
-    bounds.bottom > window.innerHeight ||
-    bounds.left < 0 ||
-    bounds.right > window.innerWidth;
-  const isDisplayed =
-    cStyles.getPropertyValue('display') === 'none' ||
-    cStyles.getPropertyValue('visibility') === 'hidden';
-  const isHidden = cStyles.getPropertyValue('visibility') === 'hidden';
-  const noOpacity = cStyles.getPropertyValue('opacity') === '0';
-  console.log({ isOffScreen, isDisplayed, isHidden, noOpacity }, element);
-  return isDisplayed || isHidden || noOpacity || isOffScreen;
-};
-
 const findAndClick = async (selector) => {
   let element = await document.querySelector(selector);
   if (element) {
