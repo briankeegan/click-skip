@@ -24,9 +24,9 @@ Use at your own risk. (just read the code, its minimal)
 - Double click on the css (in inspector) and copy the class name.
 
 <details> <summary>Click to expand screenshots</summary>
-![](screenshots/inspect.png)
-![](screenshots/inspect2.png) 
-![](screenshots/inspect3.png)
+![how to open inspect 1](screenshots/inspect.png)
+![how to open inspect 2](screenshots/inspect2.png) 
+![how to open inspect 3](screenshots/inspect3.png)
 </details>
 
 In this example, it was
