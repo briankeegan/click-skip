@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let newContent = '';
     if (!areAnyActive) {
       newContent += '<h3 class="popup-extensions-site-not-active">Doesn\'t run on this site.</h3>\n';
-      newContent += '<p>To update, config, see the [README.md]()</p>\n';
+      newContent += '<p>To update, config, see <a href="https://github.com/briankeegan/click-skip#how-to-add-new-buttons-to-click" target="_blank">docs</a> </p>\n';
     }
 
     newContent += listToSkip

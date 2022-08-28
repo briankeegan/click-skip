@@ -1,6 +1,6 @@
 # Button Clicker
 
-All this really does, is checks the url of a page, and searches cotainer for s
+Button click, uses a query to search a container for changes.  If a button appears, it will click it. I've set it up with a couple, that i like, and find annoying.  With minimal tweaking, you could have it delete content, or run code javascript.
 ## How to use (at your own risk)
 
 I'm likely never gonna bother publishing this.
@@ -17,7 +17,7 @@ Use at your own risk. (just read the code, its minimal)
 ![pin extension screenshot](screenshots/pin_extension.png)
 
 
-## How to add new buttons to click
+## How to add new button selectors to click
 
 - To open and close the [chrome dev tools](https://developer.chrome.com/docs/devtools/) open cmd-shift-i mac, otherwise ctrl-shift-i.
 - You can also right click (ctrl-right-click) and click inspect, to go directly to the element info.
