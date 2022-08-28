@@ -1,44 +1,26 @@
 const listOfSites = [
   {
-    // https://www.youtube.com/watch?v=gHnuQZFxHt0,
     urlSearchString: 'youtube.com',
     containerSelector: '.video-ads',
     clickableSelectors: ['.ytp-ad-skip-button', '.ytp-ad-overlay-close-button'],
   },
   {
-    // https://www.youtube.com/watch?v=gHnuQZFxHt0,
     urlSearchString: 'hulu.com',
     containerSelector: '.ControlsContainer',
-    // clickableSelectors: ['SkipButton'],
     clickableSelectors: [
       'SkipButton',
       '.SkipButton__button',
-      `.SkipButton__button[data-automationid="player-skip-button"]`,
+      '[data-automationid="player-skip-button"]',
     ],
   },
   {
     urlSearchString: 'netflix.com',
     containerSelector: '.watch-video',
-    clickableSelectors: [
-      '.watch-video--skip-content-button',
-    ],
+    clickableSelectors: ['.watch-video--skip-content-button'],
   },
 ];
 
-const config = { childList: true, subtree: false };
-
-let hasStartedObserving = false;
-
-// Allow everything
-const ALLOWED_TO_OPEN = ['/'];
-
-const POSSIBLE_OBJECTS_2 = [
-  'isOn',
-  'token',
-  'url',
-  'tabId',
-  'tabUrl',
-];
+const POSSIBLE_OBJECTS_2 = ['isOn', 'url', 'listToSkip'];
 
 const findAndClick = async (selector) => {
   let element = await document.querySelector(selector);
@@ -71,7 +53,7 @@ const observeContainerAndButtons = async ({
       for (let i = 0; i < mutationList.length; i++) {
         clickableSelectors.forEach(findAndClick);
       }
-    }).observe(adsContainer, config);
+    }).observe(adsContainer, { childList: true, subtree: false });
   } else {
     setTimeout(async () => {
       await observeContainerAndButtons({
@@ -83,9 +65,9 @@ const observeContainerAndButtons = async ({
 };
 
 let observer = null;
-const skipAds = async () => {
-  const { tabUrl } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
-  listOfSites.forEach(async (currentSite) => {
+const skipAds = async (listToSkip) => {
+  const tabUrl = window.location.href;
+  listToSkip.forEach(async (currentSite) => {
     if (tabUrl.includes(currentSite.urlSearchString)) {
       console.log('Site is ', currentSite.urlSearchString);
       await observeContainerAndButtons({
@@ -96,10 +78,11 @@ const skipAds = async () => {
   });
 };
 
-const startOrStop = async (isOn = true) => {
+const startOrStop = async () => {
+  const { isOn, listToSkip } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
   if (isOn) {
     console.log('start!');
-    skipAds();
+    skipAds(listToSkip);
   }
   if (!isOn) {
     console.log('stop!');
@@ -117,7 +100,10 @@ chrome.storage.onChanged.addListener(async function (changes, namespace) {
 
 const onStart = async () => {
   console.log('content.js is started');
-  const { isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
+  const { isOn, listToSkip } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
+  if (!listToSkip) {
+    await chrome.storage.local.set({ listToSkip: listOfSites });
+  }
   await startOrStop(isOn);
 };
 

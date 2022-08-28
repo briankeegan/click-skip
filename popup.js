@@ -1,11 +1,26 @@
-const POSSIBLE_OBJECTS = ['isOn', 'token', 'url'];
+const POSSIBLE_OBJECTS = ['isOn', 'url', 'listToSkip'];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const toggleOnButton = document.getElementById('toggleOn');
 
   const content = document.getElementById('content');
+  const contentBody = document.getElementById('contentBody');
   const extensionContent = document.getElementById('extensionContent');
   const disallowedDiv = document.getElementById('disallowed');
+
+//   console.log(contentBody)
+
+// //   const addContentToBody = async = () => {
+// //     const { listToSkip } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
+// //     contentBody.innerHTML = listToSkip.map((siteInfo) => {
+// //     const { urlSearchString, containerSelector, clickableSelectors } = siteInfo;
+// //     return `<div class="site">
+// //         <div class="site-url">${urlSearchString}</div>
+// //         <div class="site-container">${containerSelector}</div>
+// //         <div class="site-buttons">${clickableSelectors.join(', ')}</div>
+// //         </div>`;
+// //     }).join('\n');
+// //   }
 
   const onClickToggleOn = async (isOn) => {
     if (Boolean(isOn)) {
@@ -27,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const onStart = async () => {
-    const { isOn, url } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
+    const { isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS);
     if (!Boolean(toggleOnButton)) {
       console.log("Didn't run here");
       return;
