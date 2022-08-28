@@ -16,6 +16,13 @@ const listOfSites = [
       `.SkipButton__button[data-automationid="player-skip-button"]`,
     ],
   },
+  {
+    urlSearchString: 'netflix.com',
+    containerSelector: '.watch-video',
+    clickableSelectors: [
+      '.watch-video--skip-content-button',
+    ],
+  },
 ];
 
 const config = { childList: true, subtree: false };

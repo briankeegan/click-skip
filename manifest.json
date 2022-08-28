@@ -1,6 +1,6 @@
 {
-  "name": "Skip Ads",
-  "description": "Close and skip ads automatically.",
+  "name": "Click Skip",
+  "description": "Close and skip intros, and ads automatically (using css selectors).",
   "version": "1.0",
   "manifest_version": 3,
   "background": {
