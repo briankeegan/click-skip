@@ -1,4 +1,4 @@
-const removeModal = async () => {
+const nyTimesRemoveModal = async () => {
   const interval = setInterval(async () => {
     const itemToRemove = document.querySelector('[class*=modal_modal-window-container]');
     if (itemToRemove) {
@@ -9,7 +9,7 @@ const removeModal = async () => {
   }, 1000);
 }
 
-const addScrollability = () => {
+const nyTimesAddScrollability = () => {
   const interval = setInterval(async () => {
     const itemToRemove = document.querySelector('[class*=mask_no-scroll');
     if (itemToRemove) {
@@ -45,7 +45,7 @@ const ListOfSites = [
   },
   {
     urlSearchString: 'cooking.nytimes.com/',
-    customScripts: [removeModal, addScrollability]
+    customScripts: [nyTimesRemoveModal, nyTimesAddScrollability]
   },
 ];
 
