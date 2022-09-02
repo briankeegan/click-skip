@@ -1,4 +1,29 @@
-const listOfSites = [
+const removeModal = async () => {
+  const interval = setInterval(async () => {
+    const itemToRemove = document.querySelector('[class*=modal_modal-window-container]');
+    if (itemToRemove) {
+      itemToRemove.remove();
+    } else {
+      clearInterval(interval);
+    }
+  }, 1000);
+}
+
+const addScrollability = () => {
+  const interval = setInterval(async () => {
+    const itemToRemove = document.querySelector('[class*=mask_no-scroll');
+    if (itemToRemove) {
+      console.log('removing mask');
+      // const classNames = [...document.querySelectorAll('[class^=mask_no-scroll')[0].classList.values()]
+      const classNames = [...itemToRemove.classList.values()]
+      classNamesToRemove = classNames.filter(className => className.includes('mask_no-scroll'));
+      itemToRemove.classList.remove(...classNamesToRemove);
+    } 
+  }, 500);
+}
+
+
+const ListOfSites = [
   {
     urlSearchString: 'youtube.com',
     containerSelector: '.video-ads',
@@ -18,11 +43,24 @@ const listOfSites = [
     containerSelector: '.watch-video',
     clickableSelectors: ['.watch-video--skip-content-button'],
   },
+  {
+    urlSearchString: 'cooking.nytimes.com/',
+    customScripts: [removeModal, addScrollability]
+  },
 ];
 
-const POSSIBLE_OBJECTS_2 = ['isOn', 'url', 'listToSkip'];
+
+
+
+
+
+const POSSIBLE_OBJECTS_2 = ['isOn', 'url'];
 
 const findAndClick = async (selector) => {
+  // Lazy solution for weird bug
+  if (!selector) {
+    return;
+  }
   let element = await document.querySelector(selector);
   if (element) {
     console.log('found element and clicked', selector);
@@ -38,13 +76,32 @@ const findAndClick = async (selector) => {
     }, 100);
   }
 };
+const findAndRemove = async (selector) => {
+  // Lazy solution for weird bug
+  if (!selector) {
+    return;
+  }
+  let element = await document.querySelector(selector);
+  if (element) {
+    console.log('found element and removed', selector);
+    element.remove();
+    // continuesly remove until element is not found
+    const interval = setInterval(async () => {
+      element = await document.querySelector(selector);
+      if (element) {
+        element.remove();
+      } else {
+        clearInterval(interval);
+      }
+    }, 100);
+  }
+};
 
 const observeContainerAndButtons = async ({
   containerSelector,
-  clickableSelectors,
+  clickableSelectors = [],
 }) => {
   const adsContainer = document.querySelector(containerSelector);
-  // await clickableSelectors.forEach(findAndClick);
   clickableSelectors.forEach(findAndClick);
 
   if (adsContainer) {
@@ -54,7 +111,8 @@ const observeContainerAndButtons = async ({
         clickableSelectors.forEach(findAndClick);
       }
     }).observe(adsContainer, { childList: true, subtree: false });
-  } else {
+    // only check this if container is specificied
+  } else if (containerSelector) {
     setTimeout(async () => {
       await observeContainerAndButtons({
         containerSelector,
@@ -65,25 +123,29 @@ const observeContainerAndButtons = async ({
 };
 
 let observer = null;
-const skipAds = async (listToSkip) => {
+const skipAds = async (ListOfSites) => {
   const tabUrl = window.location.href;
-  listToSkip.forEach(async (currentSite) => {
+  ListOfSites.forEach(async (currentSite) => {
     if (tabUrl.includes(currentSite.urlSearchString)) {
       await chrome.storage.local.set({ url: tabUrl });
       console.log('Site is ', currentSite.urlSearchString);
-      await observeContainerAndButtons({
-        containerSelector: currentSite.containerSelector,
-        clickableSelectors: currentSite.clickableSelectors,
-      });
+      if (currentSite.customScripts && currentSite.customScripts.length > 0) {
+        currentSite.customScripts.forEach(script => script())
+      } else {
+        await observeContainerAndButtons({
+          containerSelector: currentSite.containerSelector,
+          clickableSelectors: currentSite.clickableSelectors,
+        });
+      }
     }
   });
 };
 
 const startOrStop = async () => {
-  const { isOn, listToSkip } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
+  const { isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
   if (isOn) {
     console.log('start!');
-    skipAds(listToSkip);
+    skipAds(ListOfSites);
   }
   if (!isOn) {
     console.log('stop!');
@@ -101,11 +163,9 @@ chrome.storage.onChanged.addListener(async function (changes, namespace) {
 
 const onStart = async () => {
   console.log('content.js is started');
-  const { isOn, listToSkip } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
-  if (!listToSkip) {
-    await chrome.storage.local.set({ listToSkip: listOfSites });
-  }
+  const { isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
   await startOrStop(isOn);
 };
 
 onStart();
+ 

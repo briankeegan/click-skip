@@ -1,7 +1,7 @@
 const POSSIBLE_OBJECTS = ['isOn', 'url', 'listToSkip'];
 
-const sortListsWithActiveUrlAtTop = ((listOfSites, tabUrl) => {
-  return listOfSites.reduce((acc, currentSite) => {
+const sortListsWithActiveUrlAtTop = ((ListOfSites, tabUrl) => {
+  return ListOfSites.reduce((acc, currentSite) => {
     if (tabUrl.includes(currentSite.urlSearchString)) {
       return [currentSite, ...acc];
     }
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const onStart = async () => {
-    const { isOn, listToSkip, url } = await chrome.storage.local.get(
+    const { isOn } = await chrome.storage.local.get(
       POSSIBLE_OBJECTS
     );
     if (!Boolean(toggleOnButton)) {
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
     const [firstTab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-    const listToSkipSorted = await sortListsWithActiveUrlAtTop(listToSkip, firstTab.url);
+    const listToSkipSorted = await sortListsWithActiveUrlAtTop(ListOfSites, firstTab.url);
     addContentToBody(listToSkipSorted, (firstTab || {}).url);
     // ---------------------------------------------------------------,
     toggleOnButton.addEventListener('click', onClickToggle);
