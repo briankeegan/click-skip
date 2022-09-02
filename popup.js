@@ -1,7 +1,7 @@
 const POSSIBLE_OBJECTS = ['isOn', 'url', 'listToSkip'];
 
-const sortListsWithActiveUrlAtTop = ((ListOfSites, tabUrl) => {
-  return ListOfSites.reduce((acc, currentSite) => {
+const sortListsWithActiveUrlAtTop = ((listOfSites, tabUrl) => {
+  return listOfSites.reduce((acc, currentSite) => {
     if (tabUrl.includes(currentSite.urlSearchString)) {
       return [currentSite, ...acc];
     }
@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const extensionContent = document.getElementById('extensionContent');
   const disallowedDiv = document.getElementById('disallowed');
 
+
+  const maybeRender = (truthy) => truthy ? true : '';
   const addContentToBody = (listToSkip, activeUrl) => {
     const areAnyActive = listToSkip.some(({ urlSearchString }) => {
       return activeUrl.includes(urlSearchString);
@@ -29,19 +31,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     newContent += listToSkip
       .map((siteInfo) => {
-        const { urlSearchString, containerSelector, clickableSelectors } =
+        const { urlSearchString, containerSelector, clickableSelectors, customScripts } =
           siteInfo;
           const isActive = activeUrl.includes(urlSearchString);
         return `
     <div class="popup-extensions-site ${isActive ? 'popup-extensions-site-active' : ''}">
       <div class="popup-extensions-label-thing-container">
+         <div class="popup-extension-label">url:</div>
         <div class="popup-extensions-site-url">${urlSearchString}</div>
       </div>
-      <div class="popup-extensions-label-thing-container">
+      ${maybeRender(containerSelector) &&
+        `<div class="popup-extensions-label-thing-container">
         <div class="popup-extension-label">Container:</div>
         <div class="popup-extensions-site-selector">${containerSelector}</div>
-      </div>
-      <div class="popup-extensions-label-thing-container">
+      </div>`}
+      ${maybeRender(Array.isArray(customScripts)) &&
+        `<div class="popup-extensions-label-thing-container">
+        <div class="popup-extension-label">Custom scripts:</div>
+        <div class="popup-extensions-site-selector">${customScripts.length}</div>
+      </div>`}
+      ${maybeRender(Array.isArray(clickableSelectors)) && 
+      `<div class="popup-extensions-label-thing-container">
         <div class="popup-extension-label">Clickables:</div>
         <div class="popup-extensions-site-selector-wrapper">
         ${clickableSelectors
@@ -50,8 +60,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               `<div class="popup-extensions-site-selector">${selector}</div>`
           )
           .join('')}
-          </div>
-      </div>
+        </div>
+      </div>`}
     </div>`;
       })
       .join('\n');
@@ -79,7 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const onStart = async () => {
-    const { isOn } = await chrome.storage.local.get(
+    const { isOn, listToSkip, url } = await chrome.storage.local.get(
       POSSIBLE_OBJECTS
     );
     if (!Boolean(toggleOnButton)) {
@@ -87,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
     const [firstTab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-    const listToSkipSorted = await sortListsWithActiveUrlAtTop(ListOfSites, firstTab.url);
+    const listToSkipSorted = await sortListsWithActiveUrlAtTop(listToSkip, firstTab.url);
     addContentToBody(listToSkipSorted, (firstTab || {}).url);
     // ---------------------------------------------------------------,
     toggleOnButton.addEventListener('click', onClickToggle);

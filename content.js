@@ -55,11 +55,6 @@ const ListOfSites = [
   },
 ];
 
-
-
-
-
-
 const POSSIBLE_OBJECTS_2 = ['isOn', 'url'];
 
 const findAndClick = async (selector) => {
@@ -170,6 +165,7 @@ chrome.storage.onChanged.addListener(async function (changes, namespace) {
 const onStart = async () => {
   console.log('content.js is started');
   const { isOn } = await chrome.storage.local.get(POSSIBLE_OBJECTS_2);
+  await chrome.storage.local.set({ listToSkip: ListOfSites });
   await startOrStop(isOn);
 };
 
